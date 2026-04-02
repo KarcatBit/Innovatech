@@ -5,18 +5,22 @@ import com.innovatech.model.TaskStatus;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Transactional
 public class TaskStatusService {
 
     @Autowired
     private TaskStatusRepository taskStatusRepository;
 
+    @Transactional(readOnly = true)
     public List<TaskStatus> findAll() {
         return taskStatusRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public TaskStatus findById(Long id) {
         return taskStatusRepository.findById(id).orElse(null);
     }

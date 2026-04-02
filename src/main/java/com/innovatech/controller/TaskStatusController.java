@@ -38,6 +38,20 @@ public class TaskStatusController {
         return taskStatusService.save(taskStatus);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody TaskStatus taskStatus) {
+        TaskStatus existingStatus = taskStatusService.findById(id);
+    
+        if (existingStatus == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                 .body("Cannot update: A task status with this ID does not exist.");
+        }
+        taskStatus.setIdTaskStatus(id);
+        TaskStatus updatedStatus = taskStatusService.save(taskStatus);
+        
+        return ResponseEntity.ok(updatedStatus);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         TaskStatus status = taskStatusService.findById(id);

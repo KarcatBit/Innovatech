@@ -47,6 +47,19 @@ public class TaskController {
         return taskService.save(task);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Task task) {
+        Task existingTask = taskService.findById(id);
+        
+        if (existingTask == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body("Cannot update: A task with this ID does not exist.");
+        }
+        task.setIdTask(id); 
+        Task updatedTask = taskService.save(task);
+        return ResponseEntity.ok(updatedTask);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         Task task = taskService.findById(id);

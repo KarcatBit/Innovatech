@@ -33,5 +33,9 @@ public class Task {
     @JsonFormat(pattern = "dd-MM-yyyy")
     @Column(name = "date_finished", nullable = true)
     private LocalDate dateFinished;
+
+    @ManyToOne
+    @JoinColumn(name = "task_status_id", nullable = false)
+    private TaskStatus taskStatus;
     
 }

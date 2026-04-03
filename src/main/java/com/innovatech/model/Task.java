@@ -34,8 +34,12 @@ public class Task {
     @Column(name = "date_finished", nullable = true)
     private LocalDate dateFinished;
 
+    @Column(name = "project_id")
+    private Long projectId;
+
     @ManyToOne
     @JoinColumn(name = "task_status_id", nullable = false)
     private TaskStatus taskStatus;
+
     
 }

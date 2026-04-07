@@ -1,5 +1,6 @@
 package com.innovatech.service;
 
+import com.innovatech.dto.RoleDTO;
 import com.innovatech.model.Role;
 import com.innovatech.repository.RoleRepository;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -15,50 +17,79 @@ public class RoleService {
 
     private final RoleRepository roleRepository;
 
+    // Mapper: Role -> RoleDTO
+    private RoleDTO toDTO(Role role) {
+        return new RoleDTO(
+                role.getId(),
+                role.getName(),
+                role.getHourlyRate()
+        );
+    }
+
+    // Mapper: RoleDTO -> Role
+    private Role toEntity(RoleDTO dto) {
+        Role role = new Role();
+        role.setId(dto.getId());
+        role.setName(dto.getName());
+        role.setHourlyRate(dto.getHourlyRate());
+        return role;
+    }
+
     // Get all roles
-    public List<Role> getAllRoles() {
-        return roleRepository.findAll();
+    public List<RoleDTO> getAllRoles() {
+        return roleRepository.findAll()
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     // Get role by ID
-    public Optional<Role> getRoleById(Long id) {
-        return roleRepository.findById(id);
+    public Optional<RoleDTO> getRoleById(Long id) {
+        return roleRepository.findById(id)
+                .map(this::toDTO);
     }
 
     // Get role by name
-    public Optional<Role> getRoleByName(String name) {
-        return roleRepository.findByName(name);
+    public Optional<RoleDTO> getRoleByName(String name) {
+        return roleRepository.findByName(name)
+                .map(this::toDTO);
     }
 
     // Get roles by hourly rate less than
-    public List<Role> getRolesByHourlyRateLessThan(Double hourlyRate) {
-        return roleRepository.findByHourlyRateLessThan(hourlyRate);
+    public List<RoleDTO> getRolesByHourlyRateLessThan(Double hourlyRate) {
+        return roleRepository.findByHourlyRateLessThan(hourlyRate)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     // Get roles by hourly rate greater than
-    public List<Role> getRolesByHourlyRateGreaterThan(Double hourlyRate) {
-        return roleRepository.findByHourlyRateGreaterThan(hourlyRate);
+    public List<RoleDTO> getRolesByHourlyRateGreaterThan(Double hourlyRate) {
+        return roleRepository.findByHourlyRateGreaterThan(hourlyRate)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     // Create role
     @Transactional
-    public Role createRole(Role role) {
-        if (roleRepository.existsByName(role.getName())) {
-            throw new RuntimeException("Role already exists with name: " + role.getName());
+    public RoleDTO createRole(RoleDTO dto) {
+        if (roleRepository.existsByName(dto.getName())) {
+            throw new RuntimeException("Role already exists with name: " + dto.getName());
         }
-        return roleRepository.save(role);
+        return toDTO(roleRepository.save(toEntity(dto)));
     }
 
     // Update role
     @Transactional
-    public Role updateRole(Long id, Role updatedRole) {
+    public RoleDTO updateRole(Long id, RoleDTO dto) {
         Role existing = roleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Role not found with ID: " + id));
 
-        existing.setName(updatedRole.getName());
-        existing.setHourlyRate(updatedRole.getHourlyRate());
+        existing.setName(dto.getName());
+        existing.setHourlyRate(dto.getHourlyRate());
 
-        return roleRepository.save(existing);
+        return toDTO(roleRepository.save(existing));
     }
 
     // Delete role

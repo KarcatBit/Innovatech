@@ -1,6 +1,7 @@
 package com.innovatech.controller;
 
-import com.innovatech.model.Employee;
+import com.innovatech.dto.EmployeeResponseDTO;
+import com.innovatech.dto.EmployeeRequestDTO;
 import com.innovatech.service.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,58 +17,51 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    // GET all employees
     @GetMapping
-    public ResponseEntity<List<Employee>> getAllEmployees() {
+    public ResponseEntity<List<EmployeeResponseDTO>> getAllEmployees() {
         return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
-    // GET employee by RUT
     @GetMapping("/{rut}")
-    public ResponseEntity<Employee> getEmployeeByRut(@PathVariable String rut) {
+    public ResponseEntity<EmployeeResponseDTO> getEmployeeByRut(@PathVariable String rut) {
         return employeeService.getEmployeeByRut(rut)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // GET employee by email
     @GetMapping("/email/{email}")
-    public ResponseEntity<Employee> getEmployeeByEmail(@PathVariable String email) {
+    public ResponseEntity<EmployeeResponseDTO> getEmployeeByEmail(@PathVariable String email) {
         return employeeService.getEmployeeByEmail(email)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // GET employees by role
     @GetMapping("/role/{roleId}")
-    public ResponseEntity<List<Employee>> getEmployeesByRole(@PathVariable Long roleId) {
+    public ResponseEntity<List<EmployeeResponseDTO>> getEmployeesByRole(@PathVariable Long roleId) {
         return ResponseEntity.ok(employeeService.getEmployeesByRole(roleId));
     }
 
-    // POST create employee
     @PostMapping
-    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
+    public ResponseEntity<EmployeeResponseDTO> createEmployee(@RequestBody EmployeeRequestDTO dto) {
         try {
-            Employee created = employeeService.createEmployee(employee);
+            EmployeeResponseDTO created = employeeService.createEmployee(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
 
-    // PUT update employee
     @PutMapping("/{rut}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable String rut,
-                                                   @RequestBody Employee employee) {
+    public ResponseEntity<EmployeeResponseDTO> updateEmployee(@PathVariable String rut,
+                                                              @RequestBody EmployeeRequestDTO dto) {
         try {
-            Employee updated = employeeService.updateEmployee(rut, employee);
+            EmployeeResponseDTO updated = employeeService.updateEmployee(rut, dto);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    // DELETE employee
     @DeleteMapping("/{rut}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable String rut) {
         try {
